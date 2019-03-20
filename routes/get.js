@@ -62,11 +62,8 @@ router.get("/get_friends/:user_id", async (req, res) => {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    console.log(result);
+    return res.status(200).send({ friends: result.rows });
   });
-  console.log(values);
-  console.log("friends!");
-  return res.status(200).send({ message: "Friends" });
 });
 
 module.exports = router;
