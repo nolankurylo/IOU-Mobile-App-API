@@ -56,8 +56,7 @@ router.get("/get_amount/:id", (req, res) => {
 
 router.get("/get_friends/:user_id", async (req, res) => {
   values = [req.params.user_id];
-  text = `SELECT * FROM friends WHERE user_a_id = 1 OR user_b_id = 1;
-  WITH A AS (SELECT * FROM friends AS a INNER JOIN account AS b ON a.user_a_id = b.id OR (a.user_b_id = b.id) WHERE a.user_a_id = $1 OR a.user_b_id = $1)
+  text = `WITH A AS (SELECT * FROM friends AS a INNER JOIN account AS b ON a.user_a_id = b.id OR (a.user_b_id = b.id) WHERE a.user_a_id = $1 OR a.user_b_id = $1)
   SELECT  DISTINCT ON (id)* FROM A`;
   query(text, values, (err, result) => {
     if (err) {
