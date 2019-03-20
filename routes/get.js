@@ -54,4 +54,11 @@ router.get("/get_amount/:id", (req, res) => {
   });
 });
 
+router.get("/get_friends/:user_id", async (req, res) => {
+  values = [req.params.user_id];
+  console.log(values);
+  console.log("friends!");
+  return res.status(200).send({ message: "Friends" });
+});
+
 module.exports = router;
