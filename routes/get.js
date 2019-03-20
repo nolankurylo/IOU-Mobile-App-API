@@ -56,7 +56,7 @@ router.get("/get_amount/:id", (req, res) => {
 
 router.get("/get_friends/:user_id", async (req, res) => {
   values = [req.params.user_id];
-  text = `select * from friends where user_a_id = 1 or user_b_id = 1;`;
+  text = `select * from friends where user_a_id = $1 or user_b_id = $1;`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
