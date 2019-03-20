@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 var query = require(".././Tools/queries");
 router.get("/", async (req, res) => {
- console.log("You hit Nolan's API"); 
- return res.status(200).send("This is Nolan's API");
+  console.log("You hit Nolan's API");
+  return res.status(200).send("This is Nolan's API");
 });
 
 router.get("/get_user_table_by_id/:id", async (req, res) => {
@@ -56,6 +56,14 @@ router.get("/get_amount/:id", (req, res) => {
 
 router.get("/get_friends/:user_id", async (req, res) => {
   values = [req.params.user_id];
+  text = `select * from friends where user_a_id = 1 or user_b_id = 1;`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    console.log(result);
+  });
   console.log(values);
   console.log("friends!");
   return res.status(200).send({ message: "Friends" });
