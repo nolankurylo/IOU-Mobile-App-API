@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 var query = require(".././Tools/queries");
 router.get("/", async (req, res) => {
-  return res.status(200).send("This is Nolan's API");
+ console.log("You hit Nolan's API"); 
+ return res.status(200).send("This is Nolan's API");
 });
 
 router.get("/get_user_table_by_id/:id", async (req, res) => {
