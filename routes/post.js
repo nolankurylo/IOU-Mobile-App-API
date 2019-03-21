@@ -149,4 +149,24 @@ router.post("/insert_new_purchase", async (req, res) => {
   });
 });
 
+router.post("/remove_friend/:user/:friend", async (req, res) => {
+  values = [req.params.user, req.params.friend];
+  text = `DELETE FROM friends WHERE (user_a_id = $1 AND user_b_id = $2) OR (user_b_id = $1 AND user_a_id = $2)`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res
+      .status(200)
+      .send({
+        success:
+          "User: " +
+          req.params.user +
+          " and User: " +
+          req.params.friend +
+          " are no longer friends!"
+      });
+  });
+});
 module.exports = router;
