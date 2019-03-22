@@ -67,4 +67,16 @@ router.get("/get_friends/:user_id", async (req, res) => {
   });
 });
 
+router.get("/get_users", async (req, res) => {
+  values = [];
+  text = `SELECT * FROM account;`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ users: result.rows });
+  });
+});
+
 module.exports = router;
