@@ -69,7 +69,7 @@ router.get("/get_friends/:user_id", async (req, res) => {
 
 router.get("/get_users", async (req, res) => {
   values = [];
-  text = `SELECT * FROM account;`;
+  text = `SELECT * FROM account AS A LEFT JOIN friends AS B ON A.id = B.user_b_id OR A.id =B.user_a_id`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
