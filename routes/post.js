@@ -194,4 +194,16 @@ router.post("/get_users", async (req, res) => {
     return res.status(200).send({ users: result.rows });
   });
 });
+
+router.post("/add_friend", (req, res) => {
+  values = [req.body.user_a_id, req.body.user_b_id]
+  text = `INSERT INTO friends (user_a_id, user_b_id, status) VALUES ($1, $2,'req')`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
 module.exports = router;
