@@ -195,7 +195,7 @@ router.post("/get_users", async (req, res) => {
   });
 });
 
-router.post("/add_friend", (req, res) => {
+router.post("/new_friend_request", (req, res) => {
   values = [req.body.user_a_id, req.body.user_b_id]
   text = `INSERT INTO friends (user_a_id, user_b_id, status) VALUES ($1, $2,'req')`
   query(text, values, (err, result) => {
