@@ -67,9 +67,10 @@ router.get("/get_friends/:user_id", async (req, res) => {
   });
 });
 
-router.get("/get_users", async (req, res) => {
-  values = [];
-  text = `SELECT * FROM account AS A LEFT JOIN friends AS B ON A.id = B.user_b_id OR A.id =B.user_a_id`;
+router.get("/get_users/:user_id", async (req, res) => {
+  values = [req.params.user_id];
+  text = `WITH A AS (SELECT * FROM friends WHERE user_a_id = $1 OR user_b_id = $1)
+  SELECT * FROM account LEFT JOIN A ON account.id = A.user_b_id OR account.id = A.user_a_id WHERE id != $1`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
