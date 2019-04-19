@@ -206,4 +206,16 @@ router.post("/new_friend_request", (req, res) => {
     return res.status(200).send({ success: true });
   });
 })
+
+router.post("/get_friend_requests", (req, res) => {
+  values = [req.body.user_id]
+  text = `SELECT * FROM friends WHERE (user_a_id = $1 AND status ='req') OR (user_b_id = $1 AND status ='req')`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ friends: result.rows });
+  });
+})
 module.exports = router;
