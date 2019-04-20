@@ -69,7 +69,7 @@ router.get("/get_friends/:user_id", async (req, res) => {
 
 router.get("/get_friend_requests/:user_id", (req, res) => {
   values = [req.params.user_id]
-  text = `SELECT * FROM friends WHERE (user_a_id = $1 AND status ='req') OR (user_b_id = $1 AND status ='req')`
+  text = `SELECT * FROM friends WHERE user_b_id = $1 AND status ='req'`
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
