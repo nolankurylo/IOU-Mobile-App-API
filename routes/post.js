@@ -207,4 +207,22 @@ router.post("/new_friend_request", (req, res) => {
   });
 })
 
+router.post("/accept_friend_request", (req, res) => {
+  values = [req.body.user_a_id, req.body.user_b_id]
+  text = `UPDATE friends SET status = 'friends' WHERE user_a_id = $1 AND user_b_id = $2 RETURNING *`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    if(result.rowCount > 0){
+      return res.status(200).send({ success: true });
+    }
+    else{
+      return res.status(200).send({ success: false });
+    }
+    
+  });
+})
+
 module.exports = router;
