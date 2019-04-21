@@ -230,4 +230,30 @@ router.post("/decline_friend_request", (req, res) => {
   });
 })
 
+router.post("/add_new_house", (req, res) => {
+  values = [req.body.user_id]
+  text = `INSERT INTO houses (user_id) VALUES ($1) RETURNING *;`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    if(result.rowCount > 0){
+      house_id = result.rows[0].id
+      text = `UPDATE houses SET house_id = $1 WHERE id = $1;`
+      values = [house_id]
+      query(text, values, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({ error: "There was an internal error" });
+        }
+        return res.status(200).send({ success: true });
+      })
+    }
+    else{
+      return res.status(200).send({ success: false });
+    }
+  });
+})
+
 module.exports = router;
