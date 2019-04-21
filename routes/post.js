@@ -232,6 +232,7 @@ router.post("/decline_friend_request", (req, res) => {
 
 router.post("/add_new_house", (req, res) => {
   values = [req.body.user_id]
+  rows = []
   text = `INSERT INTO houses (user_id) VALUES ($1) RETURNING *;`
   query(text, values, (err, result) => {
     if (err) {
@@ -247,11 +248,11 @@ router.post("/add_new_house", (req, res) => {
           console.log(err);
           return res.status(500).send({ error: "There was an internal error" });
         }
-        return res.status(200).send({ success: true });
+        return res.status(200).send({ rows: result.rows });
       })
     }
     else{
-      return res.status(200).send({ success: false });
+      return res.status(200).send({ rows: rows });
     }
   });
 })
