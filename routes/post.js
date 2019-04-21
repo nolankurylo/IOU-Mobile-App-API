@@ -240,7 +240,7 @@ router.post("/add_new_house", (req, res) => {
     }
     if(result.rowCount > 0){
       house_id = result.rows[0].id
-      text = `UPDATE houses SET house_id = $1 WHERE id = $1;`
+      text = `UPDATE houses SET house_id = $1 WHERE id = $1 RETURNING *;`
       values = [house_id]
       query(text, values, (err, result) => {
         if (err) {
