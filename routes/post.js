@@ -231,9 +231,9 @@ router.post("/decline_friend_request", (req, res) => {
 })
 
 router.post("/add_new_house", (req, res) => {
-  values = [req.body.user_id]
+  values = [req.body.user_id, req.body.house]
   rows = []
-  text = `INSERT INTO houses (user_id) VALUES ($1) RETURNING *;`
+  text = `INSERT INTO houses (user_id, name) VALUES ($1, $2) RETURNING *;`
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
