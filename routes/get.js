@@ -93,4 +93,18 @@ router.get("/get_users/:user_id", async (req, res) => {
   });
 });
 
+router.get("/get_friends/:user_id/:house_id", async (req, res) => {
+  values = [req.params.user_id, req.params.house_id];
+ text = `WITH A AS (SELECT * FROM friends WHERE (user_a_id = $1 OR user_b_id = $1) AND status ='friends'),
+ b AS (SELECT * FROM account INNER JOIN A ON account.id = A.user_b_id OR account.id = A.user_a_id WHERE id != $1),
+ c AS (SELECT * FROM houses WHERE house_id = $2)
+SELECT * FROM b LEFT JOIN c ON b.id = c.user_id`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ friends: result.rows });
+  });
+});
 module.exports = router;
