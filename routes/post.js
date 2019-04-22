@@ -258,8 +258,8 @@ router.post("/add_new_house", (req, res) => {
 })
 
 router.post("/add_friend_to_house", (req, res) => {
-  values = [req.body.user_id, req.body.house_id]
-  text = `INSERT INTO houses (user_id, house_id) VALUES ($1, $2);`
+  values = [req.body.user_id, req.body.house_id, req.body.name]
+  text = `INSERT INTO houses (user_id, house_id, name) VALUES ($1, $2, $3);`
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
