@@ -97,7 +97,7 @@ router.get("/get_friends/:user_id/:house_id", async (req, res) => {
   values = [req.params.user_id, req.params.house_id];
  text = `WITH A AS (SELECT * FROM friends WHERE (user_a_id = $1 OR user_b_id = $1) AND status ='friends'),
  b AS (SELECT * FROM account INNER JOIN A ON account.id = A.user_b_id OR account.id = A.user_a_id WHERE id != $1),
- c AS (SELECT house_id, user_id FROM houses WHERE house_id = $2)
+ c AS (SELECT house_id, user_id, name FROM houses WHERE house_id = $2)
 SELECT * FROM b LEFT JOIN c ON b.id = c.user_id`;
   query(text, values, (err, result) => {
     if (err) {
