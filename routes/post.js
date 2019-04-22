@@ -257,4 +257,28 @@ router.post("/add_new_house", (req, res) => {
   });
 })
 
+router.post("/add_friend_to_house", (req, res) => {
+  values = [req.body.user_id, req.body.house_id]
+  text = `INSERT INTO houses (user_id, house_id) VALUES ($1, $2);`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
+
+router.post("/remove_friend_from_house", (req, res) => {
+  values = [req.body.user_id, req.body.house_id]
+  text = `DELETE FROM houses WHERE user_id = $1 and house_id = $2;`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
+
 module.exports = router;
