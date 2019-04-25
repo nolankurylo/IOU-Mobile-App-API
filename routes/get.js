@@ -116,7 +116,7 @@ router.get("/cancel_house/:house_id", async (req, res) => {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    return res.status(200).send("Deleted house");
+    return res.status(200).send({success: true});
   });
 });
 
