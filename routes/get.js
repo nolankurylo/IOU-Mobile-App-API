@@ -120,4 +120,16 @@ router.get("/cancel_house/:house_id", async (req, res) => {
   });
 });
 
+router.get("/get_houses/:user_id", async (req, res) => {
+  values = [req.params.user_id];
+ text = `SELECT * FROM houses WHERE user_id = $1`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({houses: result.rows});
+  });
+});
+
 module.exports = router;
