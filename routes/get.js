@@ -107,4 +107,17 @@ SELECT * FROM b LEFT JOIN c ON b.id = c.user_id`;
     return res.status(200).send({ friends: result.rows });
   });
 });
+
+router.get("/cancel_house/:house_id", async (req, res) => {
+  values = [req.params.house_id];
+ text = `DELETE FROM houses WHERE house_id = $1`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send("Deleted house");
+  });
+});
+
 module.exports = router;
