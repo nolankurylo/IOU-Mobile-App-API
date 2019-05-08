@@ -249,7 +249,7 @@ router.post("/add_new_house", (req, res) => {
       return res.status(200).send({ avail: false });
     }
     else{
-      text = "WITH a as(SELECT column1 AS usr FROM (values (26),(27), (28)) AS v),"
+      text = "WITH a as(SELECT column1 AS usr FROM (values "
       for(var i = 0; i < req.body.house.length; i++){
         text += "(" + req.body.house[i] + ")"
         if (i == req.body.house.length - 1){
@@ -263,8 +263,15 @@ router.post("/add_new_house", (req, res) => {
       c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
       INSERT INTO houses (name, user_id, other_user) SELECT `
       + req.body.name + ', ' + 'usr, usr1 FROM c'
+      values = []
+      query(text, values, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({ error: "There was an internal error" });
+        }
+        return res.status(200).send({ avail: true });
+      })
     }
-    return res.status(200).send(text);
   });
 })
 
