@@ -229,31 +229,42 @@ router.post("/decline_friend_request", (req, res) => {
     
   });
 })
+// WITH a as(SELECT column1 AS usr FROM (values(26),(27), (28)) AS v),
+//  b AS (SELECT column1 AS usr1 FROM (values(26),(27), (28)) AS v1),
+// c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
+// INSERT INTO houses (house_id, name, user_id, other_user) SELECT 43, 'work', usr, usr1 FROM c
 
 router.post("/add_new_house", (req, res) => {
-  values = [req.body.user_id, req.body.house]
+  // values = [req.body.user_id, req.body.name, req.body.house]
+  // make sure house array isnt empty from ui
   rows = []
-  text = `INSERT INTO houses (user_id, name) VALUES ($1, $2) RETURNING *;`
+  text = `select * from houses where name = $1;`
+  values = [req.body.name]
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
     if(result.rowCount > 0){
-      house_id = result.rows[0].id
-      text = `UPDATE houses SET house_id = $1 WHERE id = $1 RETURNING *;`
-      values = [house_id]
-      query(text, values, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send({ error: "There was an internal error" });
-        }
-        return res.status(200).send({ rows: result.rows });
-      })
+      return res.status(200).send({ avail: false });
     }
     else{
-      return res.status(200).send({ rows: rows });
+      text = "WITH a as(SELECT column1 AS usr FROM (values (26),(27), (28)) AS v),"
+      for(var i = 0; i < req.body.house.length; i++){
+        text += "(" + req.body.house[i] + ")"
+        if (i == req.body.house.length - 1){
+          break;
+        }
+        else{
+          text += ", "
+        }
+      }
+      text += `) AS v, b AS (SELECT usr AS usr1 FROM a),
+      c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
+      INSERT INTO houses (name, user_id, other_user) SELECT `
+      + req.body.name + ', ' + 'usr, usr1 FROM c'
     }
+    return res.status(200).send(text);
   });
 })
 
@@ -270,6 +281,18 @@ router.post("/add_friend_to_house", (req, res) => {
 })
 
 router.post("/remove_friend_from_house", (req, res) => {
+  values = [req.body.user_id, req.body.house_id]
+  text = `DELETE FROM houses WHERE user_id = $1 and house_id = $2;`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
+
+router.post("/add_money_iou", (req, res) => {
   values = [req.body.user_id, req.body.house_id]
   text = `DELETE FROM houses WHERE user_id = $1 and house_id = $2;`
   query(text, values, (err, result) => {
