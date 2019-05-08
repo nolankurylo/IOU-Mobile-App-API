@@ -261,8 +261,8 @@ router.post("/add_new_house", (req, res) => {
       }
       text += `) AS v), b AS (SELECT usr AS usr1 FROM a),
       c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
-      INSERT INTO houses (name, user_id, other_user) SELECT `
-      + req.body.name + ', ' + 'usr, usr1 FROM c'
+      INSERT INTO houses (name, user_id, other_user) SELECT '`
+      + req.body.name + `', ` + `usr, usr1 FROM c`
       values = []
       query(text, values, (err, result) => {
         if (err) {
