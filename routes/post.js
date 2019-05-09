@@ -235,42 +235,30 @@ router.post("/decline_friend_request", (req, res) => {
 // INSERT INTO houses (house_id, name, user_id, other_user) SELECT 43, 'work', usr, usr1 FROM c
 
 router.post("/add_new_house", (req, res) => {
-  rows = []
-  text = `select * from houses where name = $1;`
-  values = [req.body.name]
+  text = `WITH first AS (SELECT nextval('house_id_seq')),
+  a AS (SELECT column1 AS usr FROM (values `
+  for(var i = 0; i < req.body.house.length; i++){
+    text += "(" + req.body.house[i] + ")"
+    if (i == req.body.house.length - 1){
+      break;
+    }
+    else{
+      text += ", "
+    }
+  }
+  text += `) AS v), b AS (SELECT usr AS usr1 FROM a),
+  c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1),
+  d AS (SELECT * FROM c INNER JOIN first ON TRUE)
+  INSERT INTO houses (house_id, name, user_id, other_user) SELECT nextval, '`
+  + req.body.name + `', ` + `usr, usr1 FROM d returning *`
+  values = []
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    if(result.rowCount > 0){
-      return res.status(200).send({ avail: false });
-    }
-    else{
-      text = "WITH a as(SELECT column1 AS usr FROM (values "
-      for(var i = 0; i < req.body.house.length; i++){
-        text += "(" + req.body.house[i] + ")"
-        if (i == req.body.house.length - 1){
-          break;
-        }
-        else{
-          text += ", "
-        }
-      }
-      text += `) AS v), b AS (SELECT usr AS usr1 FROM a),
-      c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
-      INSERT INTO houses (name, user_id, other_user) SELECT '`
-      + req.body.name + `', ` + `usr, usr1 FROM c`
-      values = []
-      query(text, values, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send({ error: "There was an internal error" });
-        }
-        return res.status(200).send({ avail: true });
-      })
-    }
-  });
+    return res.status(200).send({ success: true, house_id: result.rows[0].house_id });
+  })
 })
 
 router.post("/add_friend_to_house", (req, res) => {
