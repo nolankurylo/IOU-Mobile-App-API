@@ -144,9 +144,9 @@ router.get("/get_house/:house_id", async (req, res) => {
   });
 });
 
-router.get("/verify_house_name/:name", async (req, res) => {
-  text = `select * from houses where name = $1;`
-  values = [req.params.name]
+router.get("/verify_house_name/:name/:user_id", async (req, res) => {
+  text = `select * from houses where (name = $1 and user_id = $2) or (name = $1 and other_user = $2);`
+  values = [req.params.name, req.params.user_id]
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
