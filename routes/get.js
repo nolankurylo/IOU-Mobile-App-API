@@ -132,9 +132,9 @@ router.get("/get_houses/:user_id", async (req, res) => {
   });
 });
 
-router.get("/get_house/:house_id", async (req, res) => {
-  values = [req.params.house_id];
- text = `SELECT DISTINCT ON (username) * FROM account INNER JOIN houses ON account.id = houses.other_user WHERE house_id = $1`;
+router.get("/get_house/:house_id/:user_id", async (req, res) => {
+  values = [req.params.house_id, req.params.user_id];
+ text = `SELECT DISTINCT ON (username) * FROM account INNER JOIN houses ON account.id = houses.other_user WHERE house_id = $1 and user_id = $2`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
