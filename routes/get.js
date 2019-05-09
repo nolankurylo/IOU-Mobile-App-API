@@ -144,4 +144,21 @@ router.get("/get_house/:house_id", async (req, res) => {
   });
 });
 
+router.get("/verify_house_name/:name", async (req, res) => {
+  text = `select * from houses where name = $1;`
+  values = [req.params.name]
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    if(result.rowCount > 0){
+      return res.status(200).send({ success: false });
+    }
+    else{
+      return res.status(200).send({ success: true });
+    }
+  });
+});
+
 module.exports = router;
