@@ -18,5 +18,14 @@
     "jsonwebtoken": "^8.4.0",
     "node-schedule": "^1.3.2",
     "pg-promise": "^8.5.5"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nolankurylo/node-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nolankurylo/node-server/issues"
+  },
+  "homepage": "https://github.com/nolankurylo/node-server#readme"
 }
