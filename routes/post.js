@@ -235,8 +235,6 @@ router.post("/decline_friend_request", (req, res) => {
 // INSERT INTO houses (house_id, name, user_id, other_user) SELECT 43, 'work', usr, usr1 FROM c
 
 router.post("/add_new_house", (req, res) => {
-  // values = [req.body.user_id, req.body.name, req.body.house]
-  // make sure house array isnt empty from ui
   rows = []
   text = `select * from houses where name = $1;`
   values = [req.body.name]

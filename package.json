@@ -1,7 +1,7 @@
 {
   "name": "app-api",
   "version": "1.0.0",
-  "description": "Test/practice API",
+  "description": "Test/practice API: Note that package.json file is outdated.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,3 +20,4 @@
     "pg-promise": "^8.5.5"
   }
 }
+
