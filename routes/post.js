@@ -294,8 +294,8 @@ router.post("/add_money_iou", (req, res) => {
   console.log(amount)
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET amount = amount + `+ parseFloat(amount) + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `;`
-    text += `UPDATE houses SET amount = amount - `+ parseFloat(amount) + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `;`
+    text += `UPDATE houses SET amount = amount + `+ amount.toString() + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
+    text += `UPDATE houses SET amount = amount - `+ amount.toString() + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
   }
   text += `END;`
   console.log(text)
