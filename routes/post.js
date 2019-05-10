@@ -287,12 +287,13 @@ router.post("/remove_friend_from_house", (req, res) => {
 
 router.post("/add_money_iou", (req, res) => {
   users = req.body.users
+  console.log(users)
   curr_user = req.body.user_id
   amount = req.body.amount / users.length
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET amount = amount + `+ amount + `WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `;`
-    text += `UPDATE houses SET amount = amount - `+ amount + `WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `;`
+    text += `UPDATE houses SET amount = amount + `+ amount + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `;`
+    text += `UPDATE houses SET amount = amount - `+ amount + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `;`
   }
   text += `END;`
   console.log(text)
