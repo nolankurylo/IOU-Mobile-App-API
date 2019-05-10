@@ -286,8 +286,17 @@ router.post("/remove_friend_from_house", (req, res) => {
 })
 
 router.post("/add_money_iou", (req, res) => {
-  values = [req.body.user_id, req.body.house_id]
-  text = `DELETE FROM houses WHERE user_id = $1 and house_id = $2;`
+  users = req.body.users
+  curr_user = req.body.user_id
+  amount = req.body.amount / users.length
+  text = `BEGIN; `
+  for (var i = 0; i < users.length; i++){
+    text += `UPDATE houses SET amount = amount + `+ amount + `WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `;`
+    text += `UPDATE houses SET amount = amount - `+ amount + `WHERE user_id = ` + user[i] + ` AND other_user = ` + curr_user + `;`
+  }
+  text += `END;`
+  console.log(text)
+  values = []
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
