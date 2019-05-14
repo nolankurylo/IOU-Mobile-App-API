@@ -161,4 +161,16 @@ router.get("/verify_house_name/:name/:user_id", async (req, res) => {
   });
 });
 
+router.get("/get_history/:user_id/:other_user/:house_id", async (req, res) => {
+  values = [req.params.user_id, req.params.other_user, req.params.house_id];
+  text = `SELECT * FROM ious WHERE (user_id = $1 AND other_user = $2 AND house_id = $3) OR user_id = $2 AND other_user = $1 AND house_id = $3`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({history: result.rows});
+  });
+});
+
 module.exports = router;

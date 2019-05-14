@@ -309,4 +309,26 @@ router.post("/add_money_iou", (req, res) => {
   });
 })
 
+router.post("/add_object_iou", (req, res) => {
+  users = req.body.users
+  curr_user = req.body.user_id
+  if(users.length < 1){
+    return res.status(400).send({ error: "No users added for this transaction" });
+  }
+  object = req.body.object
+  text = `BEGIN; `
+  for (var i = 0; i < users.length; i++){
+    text += `insert into ious (user_id, other_user, house_id, object) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, '` + object.toString() + `'); `
+  }
+  text += `END;`
+  values = []
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
+
 module.exports = router;
