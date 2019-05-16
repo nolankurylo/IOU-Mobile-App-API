@@ -291,11 +291,14 @@ router.post("/add_money_iou", (req, res) => {
   if(users.length < 1){
     return res.status(400).send({ error: "No users added for this transaction" });
   }
-  amount = req.body.amount / (users.length + 1)
+  amount = (req.body.amount / (users.length + 1)).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET amount = amount + `+ amount.toString() + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
-    text += `UPDATE houses SET amount = amount - `+ amount.toString() + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
+    text += `UPDATE houses SET amount = amount + `+ amount + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
+    text += `UPDATE houses SET amount = amount - `+ amount + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
     text += `insert into ious (user_id, other_user, house_id, amount, description) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, ` + amount.toString() + `, '` + req.body.description + `'); `
   }
   text += `END;`
