@@ -321,6 +321,8 @@ router.post("/add_object_iou", (req, res) => {
   object = req.body.object
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
+    text += `UPDATE houses SET items = items + 1 WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
+    text += `UPDATE houses SET items = items - 1 WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
     text += `insert into ious (user_id, other_user, house_id, object) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, '` + object.toString() + `'); `
   }
   text += `END;`
