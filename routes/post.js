@@ -321,8 +321,8 @@ router.post("/add_object_iou", (req, res) => {
   object = req.body.object
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET items = items + 1 WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
-    text += `UPDATE houses SET items = items - 1 WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
+    text += `UPDATE houses SET items = items + 1 WHERE (user_id = ` + curr_user + ` AND other_user = ` + users[i] + ` AND 
+    house_id = `+ req.body.house_id +`) OR (user_id = ` + users[i] + ` AND other_user = ` + curr_user + ` AND house_id = `+ req.body.house_id + `); `
     text += `insert into ious (user_id, other_user, house_id, object) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, '` + object.toString() + `'); `
   }
   text += `END;`
@@ -338,13 +338,10 @@ router.post("/add_object_iou", (req, res) => {
 
 router.post("/settle_object_iou", (req, res) => {
     values = [req.body.id, req.body.user_id, req.body.other_user, req.body.house_id]
-    text = `WITH a AS (DELETE FROM ious WHERE id = $1),
-    b AS (UPDATE houses SET items = CASE WHEN items < 0 THEN 
-    items + 1 WHEN items > 0 THEN items - 1 ELSE 0 END WHERE 
-    user_id = $2 AND other_user = $3 AND house_id = $4)
-    UPDATE houses SET items = CASE WHEN items < 0 THEN 
-    items + 1 WHEN items > 0 THEN items - 1 ELSE 0 END 
-    WHERE user_id = $3 AND other_user = $2 AND house_id = $4`
+    text = `WITH a AS (DELETE FROM ious WHERE id = $1)
+    UPDATE houses SET items = items - 1 WHERE 
+    (user_id = $2 AND other_user = $3 AND house_id = $4)
+    OR (user_id = $3 AND other_user = $2 AND house_id = $4);`
   
   query(text, values, (err, result) => {
     if (err) {
@@ -353,6 +350,23 @@ router.post("/settle_object_iou", (req, res) => {
     }
     return res.status(200).send({ success: true });
   });
+})
+
+router.post("/settle_money_iou", (req, res) => {
+  values = [req.body.user_id, req.body.other_user, req.body.house_id]
+  text = `WITH a AS (DELETE FROM ious WHERE (amount is not null and 
+    user_id = $1 and other_user = $2 and house_id = $3) or (amount 
+    is not null and user_id = $2 and other_user = $1 and house_id = $3))
+    UPDATE houses SET amount = 0 where (user_id = $1 and other_user = $2 
+    and house_id = $3) or (user_id = $2 and other_user = $1 and house_id = $3)`
+
+query(text, values, (err, result) => {
+  if (err) {
+    console.log(err);
+    return res.status(500).send({ error: "There was an internal error" });
+  }
+  return res.status(200).send({ success: true });
+});
 })
 
 module.exports = router;

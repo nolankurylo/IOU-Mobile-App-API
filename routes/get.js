@@ -140,16 +140,7 @@ router.get("/get_house/:house_id/:user_id", async (req, res) => {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    house = result.rows
-    values = [req.params.house_id, req.params.user_id];
-    text = `SELECT * FROM ious WHERE (house_id = $1 and user_id = $2) OR (house_id = $1 and other_user = $2) `;
-    query(text, values, (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).send({ error: "There was an internal error" });
-      }
-      return res.status(200).send({house: house, items: result.rows});
-    })
+    return res.status(200).send({house: result.rows});
   });
 });
 
