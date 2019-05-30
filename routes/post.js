@@ -360,13 +360,25 @@ router.post("/settle_money_iou", (req, res) => {
     UPDATE houses SET amount = 0 where (user_id = $1 and other_user = $2 
     and house_id = $3) or (user_id = $2 and other_user = $1 and house_id = $3)`
 
-query(text, values, (err, result) => {
-  if (err) {
-    console.log(err);
-    return res.status(500).send({ error: "There was an internal error" });
-  }
-  return res.status(200).send({ success: true });
-});
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
+
+router.post("/insert_necessity", (req, res) => {
+  values = [req.body.added_by, req.body.house_id, req.body.item, req.body.description]
+  text = `insert into necessities (added_by, house_id, item, description) values ($1, $2, $3, $4);`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
 })
 
 module.exports = router;

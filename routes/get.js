@@ -134,7 +134,10 @@ router.get("/get_houses/:user_id", async (req, res) => {
 
 router.get("/get_house/:house_id/:user_id", async (req, res) => {
   values = [req.params.house_id, req.params.user_id];
-  text = `SELECT DISTINCT ON (username) * FROM account INNER JOIN houses ON account.id = houses.other_user WHERE house_id = $1 and user_id = $2`;
+  text = `WITH a as(SELECT DISTINCT ON (username) * FROM account INNER JOIN houses ON 
+  account.id = houses.other_user WHERE house_id = $1 AND user_id = $2)
+  SELECT * FROM a ORDER BY CASE WHEN amount < 0 THEN 1 WHEN amount > 0 
+  THEN 2 WHEN amount = 0  THEN 3 END asc, amount desc`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
@@ -170,6 +173,18 @@ router.get("/get_history/:user_id/:other_user/:house_id", async (req, res) => {
       return res.status(500).send({ error: "There was an internal error" });
     }
     return res.status(200).send({history: result.rows});
+  });
+});
+
+router.get("/get_necessities/:house_id", async (req, res) => {
+  values = [req.params.house_id];
+  text = `SELECT * FROM necessities INNER JOIN account ON necessities.added_by = account.id WHERE house_id = $1`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({necessities: result.rows});
   });
 });
 
