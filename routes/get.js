@@ -143,7 +143,16 @@ router.get("/get_house/:house_id/:user_id", async (req, res) => {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    return res.status(200).send({house: result.rows});
+    house = result.rows
+    values = [req.params.house_id]
+    text = `SELECT count(*) FROM necessities WHERE house_id = $1`
+    query(text, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({ error: "There was an internal error" });
+      }
+      return res.status(200).send({house: house, necessities: result.rows[0]});
+    })
   });
 });
 
