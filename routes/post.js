@@ -381,4 +381,15 @@ router.post("/insert_necessity", (req, res) => {
   });
 })
 
+router.post("/resolve_necessity_item", (req, res) => {
+  values = [req.body.house_id, req.body.id]
+  text = `delete from necessities where house_id = $1 and id = $2;`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  });
+})
 module.exports = router;
