@@ -178,7 +178,8 @@ router.get("/get_history/:user_id/:other_user/:house_id", async (req, res) => {
 
 router.get("/get_necessities/:house_id", async (req, res) => {
   values = [req.params.house_id];
-  text = `SELECT * FROM necessities INNER JOIN account ON necessities.added_by = account.id WHERE house_id = $1`
+  text = `WITH a AS( SELECT id AS user_id, username FROM account)
+  SELECT * FROM necessities INNER JOIN a ON necessities.added_by = a.user_id WHERE house_id = $1`
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
