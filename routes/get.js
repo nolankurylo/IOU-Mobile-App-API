@@ -6,6 +6,9 @@ router.get("/", async (req, res) => {
   return res.status(200).send("This is Nolan's API");
 });
 
+router.get("/", async (req, res) => {
+    return res.status(200).send("Welcome to Nolan's Node.js API :)");
+});
 router.get("/get_user_table_by_id/:id", async (req, res) => {
   text = `select id, username, email from account
 where id = $1`;
