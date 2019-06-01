@@ -1,5 +1,5 @@
 var query = require(".././Tools/queries");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const router = express.Router();
 var emailValidator = require("email-validator");
