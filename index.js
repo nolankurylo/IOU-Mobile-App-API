@@ -3,7 +3,7 @@ var query = require("./Tools/queries");
 var express = require("express");
 var app = express();
 var schedule = require("node-schedule");
-const port = 3000;
+var port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/", require("./routes/get"));
