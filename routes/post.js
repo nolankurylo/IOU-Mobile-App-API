@@ -288,13 +288,20 @@ router.post("/remove_friend_from_house", (req, res) => {
 router.post("/add_money_iou", (req, res) => {
   users = req.body.users
   curr_user = req.body.user_id
-  if(users.length < 1){
-    return res.status(400).send({ error: "No users added for this transaction" });
+  if(req.body.selfAdded){
+    console.log("self added")
+      amount = (req.body.amount / (users.length + 1)).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
   }
-  amount = (req.body.amount / (users.length + 1)).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
+  else{
+    console.log("no self")
+    amount = (req.body.amount / (users.length)).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
     text += `UPDATE houses SET amount = amount + `+ amount + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
@@ -303,6 +310,7 @@ router.post("/add_money_iou", (req, res) => {
   }
   text += `END;`
   values = []
+  console.log(amount)
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
