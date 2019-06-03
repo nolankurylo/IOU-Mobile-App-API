@@ -289,18 +289,10 @@ router.post("/add_money_iou", (req, res) => {
   users = req.body.users
   curr_user = req.body.user_id
   if(req.body.selfAdded){
-    console.log("self added")
-      amount = (req.body.amount / (users.length + 1)).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
+      amount = (req.body.amount / (users.length + 1))
   }
   else{
-    console.log("no self")
-    amount = (req.body.amount / (users.length)).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
+    amount = (req.body.amount / (users.length))
   }
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
@@ -310,7 +302,6 @@ router.post("/add_money_iou", (req, res) => {
   }
   text += `END;`
   values = []
-  console.log(amount)
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
