@@ -391,4 +391,30 @@ router.post("/resolve_necessity_item", (req, res) => {
     return res.status(200).send({ success: true });
   });
 })
+
+router.post("/add_users_to_house", (req, res) => {
+  text = `WITH a AS (SELECT DISTINCT ON (user_id) user_id FROM houses WHERE house_id = $1),
+  b AS (SELECT column1 AS new_user FROM (values `
+  for(var i = 0; i < req.body.house.length; i++){
+    text += `(${req.body.house[i]})`
+    if (i == req.body.house.length - 1){
+      break;
+    }
+    else{
+      text += `, `
+    }
+  }
+  text += `) AS v), 
+  c AS (SELECT * FROM a CROSS JOIN b),
+  d AS (INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, new_user, user_id FROM c)
+  INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, user_id, new_user FROM c;`
+  values = [req.body.house_id, req.body.name]
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({ success: true });
+  })
+})
 module.exports = router;

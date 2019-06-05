@@ -198,4 +198,19 @@ router.get("/get_necessities/:house_id", async (req, res) => {
   });
 });
 
+router.get("/get_new_possible_friends/:house_id/:user_id", async (req, res) => {
+  values = [req.params.house_id, req.params.user_id];
+  text = `WITH a as(SELECT DISTINCT (user_id) user_id FROM houses WHERE house_id != $1 AND user_id != $2)
+  SELECT * FROM a INNER JOIN account ON a.user_id = account.id`
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    return res.status(200).send({users: result.rows});
+  });
+});
+
+
+
 module.exports = router;
