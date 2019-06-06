@@ -408,7 +408,7 @@ router.post("/add_users_to_house", (req, res) => {
   c AS (SELECT * FROM a CROSS JOIN b),
   d AS (INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, new_user, user_id FROM c)
   INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, user_id, new_user FROM c;`
-  values = [req.body.house_id, req.body.name]
+  values = [req.body.house_id, req.body.house_name]
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);

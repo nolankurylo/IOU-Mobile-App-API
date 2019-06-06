@@ -110,7 +110,8 @@ SELECT * FROM b LEFT JOIN c ON b.id = c.user_id`;
 
 router.get("/cancel_house/:house_id", async (req, res) => {
   values = [req.params.house_id];
- text = `DELETE FROM houses WHERE house_id = $1`;
+ text = `with a as (DELETE FROM houses WHERE house_id = $1)
+ delete from ious where house_id = $1`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
@@ -200,8 +201,11 @@ router.get("/get_necessities/:house_id", async (req, res) => {
 
 router.get("/get_new_possible_friends/:house_id/:user_id", async (req, res) => {
   values = [req.params.house_id, req.params.user_id];
-  text = `WITH a as(SELECT DISTINCT (user_id) user_id FROM houses WHERE house_id != $1 AND user_id != $2)
-  SELECT * FROM a INNER JOIN account ON a.user_id = account.id`
+  text = `WITH a as(SELECT DISTINCT (user_id) user_id FROM houses WHERE house_id = $1 AND user_id != $2),
+b AS (SELECT user_a_id AS id FROM friends WHERE user_b_id = $2 AND status = 'friends'),
+c AS (SELECT user_b_id AS id FROM friends WHERE user_a_id = $2 AND status = 'friends'),
+d AS (SELECT * FROM b UNION SELECT * FROM c)
+SELECT * FROM d NATURAL JOIN account WHERE id NOT IN (SELECT * FROM a)`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
