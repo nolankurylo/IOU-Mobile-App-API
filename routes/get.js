@@ -175,14 +175,26 @@ router.get("/verify_house_name/:name/:user_id", async (req, res) => {
 });
 
 router.get("/get_history/:user_id/:other_user/:house_id", async (req, res) => {
-  values = [req.params.user_id, req.params.other_user, req.params.house_id];
-  text = `SELECT * FROM ious WHERE (user_id = $1 AND other_user = $2 AND house_id = $3) OR user_id = $2 AND other_user = $1 AND house_id = $3`
+  values = [];
+  text = `BEGIN;
+  SELECT * FROM ious WHERE (user_id = ${req.params.user_id} AND other_user = ${req.params.other_user} AND 
+  house_id = ${req.params.house_id}) OR user_id = ${req.params.other_user} AND other_user = ${req.params.user_id} 
+  AND house_id = ${req.params.house_id};
+  SELECT * FROM friends WHERE (user_a_id = ${req.params.user_id} AND user_b_id = ${req.params.other_user}
+  AND status = 'friends') OR (user_a_id = ${req.params.other_user} AND user_b_id = ${req.params.user_id} AND status = 'friends');
+  END;`
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).send({ error: "There was an internal error" });
     }
-    return res.status(200).send({history: result.rows});
+    if(result[2].rowCount > 0){
+      isFriend = true
+    }
+    else{
+      isFriend = false
+    }
+    return res.status(200).send({history: result[1].rows, isFriend: isFriend});
   });
 });
 

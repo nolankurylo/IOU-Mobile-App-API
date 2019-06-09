@@ -406,8 +406,11 @@ router.post("/add_users_to_house", (req, res) => {
   }
   text += `) AS v), 
   c AS (SELECT * FROM a CROSS JOIN b),
-  d AS (INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, new_user, user_id FROM c)
-  INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, user_id, new_user FROM c;`
+  d AS (INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, new_user, user_id FROM c),
+  e as (INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, user_id, new_user FROM c),
+  f as (SELECT new_user AS new_user1 FROM b),
+  g as (SELECT * FROM b CROSS JOIN f WHERE b.new_user != f.new_user1)
+  INSERT INTO houses (house_id, name, user_id, other_user) SELECT $1, $2, new_user, new_user1 FROM g;`;
   values = [req.body.house_id, req.body.house_name]
   query(text, values, (err, result) => {
     if (err) {
@@ -417,4 +420,29 @@ router.post("/add_users_to_house", (req, res) => {
     return res.status(200).send({ success: true });
   })
 })
+
+router.post("/add_friend", (req, res) => {
+  values = [req.body.user_id, req.body.other_user];
+  text = `SELECT * FROM friends WHERE (user_a_id = $1 AND user_b_id = $2
+  AND status = 'req') OR (user_a_id = $2 AND user_b_id = $1 AND status = 'req');`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ error: "There was an internal error" });
+    }
+    if(result.rowCount > 0){
+      text = `UPDATE friends set status = 'friends' WHERE user_a_id = $1 AND user_b_id = $2;`
+    }
+    else{
+      text = `INSERT INTO friends (user_a_id, user_b_id, status) VALUES ($1, $2, 'friends');`
+    }
+    query(text, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({ error: "There was an internal error" });
+      }
+      return res.status(200).send({ success: true });
+    })
+  });
+});
 module.exports = router;
