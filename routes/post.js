@@ -229,10 +229,6 @@ router.post("/decline_friend_request", (req, res) => {
     
   });
 })
-// WITH a as(SELECT column1 AS usr FROM (values(26),(27), (28)) AS v),
-//  b AS (SELECT column1 AS usr1 FROM (values(26),(27), (28)) AS v1),
-// c AS (SELECT * FROM a CROSS JOIN b WHERE a.usr != b.usr1)
-// INSERT INTO houses (house_id, name, user_id, other_user) SELECT 43, 'work', usr, usr1 FROM c
 
 router.post("/add_new_house", (req, res) => {
   text = `WITH first AS (SELECT nextval('house_id_seq')),
@@ -273,18 +269,6 @@ router.post("/add_friend_to_house", (req, res) => {
   });
 })
 
-router.post("/remove_friend_from_house", (req, res) => {
-  values = [req.body.user_id, req.body.house_id]
-  text = `DELETE FROM houses WHERE user_id = $1 and house_id = $2;`
-  query(text, values, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({ error: "There was an internal error" });
-    }
-    return res.status(200).send({ success: true });
-  });
-})
-
 router.post("/add_money_iou", (req, res) => {
   users = req.body.users
   curr_user = req.body.user_id
@@ -296,9 +280,9 @@ router.post("/add_money_iou", (req, res) => {
   }
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET amount = amount + `+ amount + ` WHERE user_id = ` + curr_user + ` AND other_user = ` + users[i] + `; `
-    text += `UPDATE houses SET amount = amount - `+ amount + ` WHERE user_id = ` + users[i] + ` AND other_user = ` + curr_user + `; `
-    text += `insert into ious (user_id, other_user, house_id, amount, description) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, ` + amount.toString() + `, '` + req.body.description + `'); `
+    text += `UPDATE houses SET amount = amount + ${amount} WHERE user_id = ${curr_user} AND other_user = ${users[i]} AND house_id = ${req.body.house_id}; `
+    text += `UPDATE houses SET amount = amount - ${amount} WHERE user_id = ${users[i]} AND other_user = ${curr_user} AND house_id = ${req.body.house_id}; `
+    text += `insert into ious (user_id, other_user, house_id, amount, description) values (${curr_user}, ${users[i]}, ${req.body.house_id}, ${amount.toString()}, '${req.body.description}'); `
   }
   text += `END;`
   values = []
@@ -320,9 +304,9 @@ router.post("/add_object_iou", (req, res) => {
   object = req.body.object
   text = `BEGIN; `
   for (var i = 0; i < users.length; i++){
-    text += `UPDATE houses SET items = items + 1 WHERE (user_id = ` + curr_user + ` AND other_user = ` + users[i] + ` AND 
-    house_id = `+ req.body.house_id +`) OR (user_id = ` + users[i] + ` AND other_user = ` + curr_user + ` AND house_id = `+ req.body.house_id + `); `
-    text += `insert into ious (user_id, other_user, house_id, object) values (` + curr_user + `, ` + users[i] + `, ` + req.body.house_id + `, '` + object.toString() + `'); `
+    text += `UPDATE houses SET items = items + 1 WHERE (user_id = ${curr_user} AND other_user = ${users[i]} AND 
+    house_id = ${req.body.house_id}) OR (user_id = ${users[i]} AND other_user = ${curr_user} AND house_id = ${req.body.house_id}); `
+    text += `insert into ious (user_id, other_user, house_id, object) values (${curr_user}, ${users[i]}, ${req.body.house_id}, '${object.toString()}'); `
   }
   text += `END;`
   values = []

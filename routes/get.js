@@ -110,8 +110,9 @@ SELECT * FROM b LEFT JOIN c ON b.id = c.user_id`;
 
 router.get("/cancel_house/:house_id", async (req, res) => {
   values = [req.params.house_id];
- text = `with a as (DELETE FROM houses WHERE house_id = $1)
- delete from ious where house_id = $1`;
+ text = `with a as (DELETE FROM houses WHERE house_id = $1),
+ b as (delete from ious where house_id = $1)
+ delete from necessities where house_id = $1`;
   query(text, values, (err, result) => {
     if (err) {
       console.log(err);
