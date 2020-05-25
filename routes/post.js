@@ -429,4 +429,18 @@ router.post("/add_friend", (req, res) => {
     })
   });
 });
+
+router.post("/change_house_name", (req, res) => {
+  values = [req.body.id, req.body.name];
+  text = `UPDATE houses set name = $2 WHERE house_id = $1`;
+  query(text, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        error: "There was an internal error"
+      });
+    }
+    return res.status(200).send({ success: true });
+  });
+});
 module.exports = router;
